@@ -1,0 +1,35 @@
+### 1. View products (empty, no token)
+$ curl http://127.0.0.1:8765/api/products/
+{"count":0,"next":null,"previous":null,"results":[]}
+HTTP 200
+
+### 2. Add valid product with token
+$ curl -X POST http://127.0.0.1:8765/api/products/ -H Authorization: Token YOUR_TOKEN -H Content-Type: application/json -d {"name":"Notebook","description":"A notebook with 100 pages.","price":"120.00","stock":25}
+{"id":1,"name":"Notebook","description":"A notebook with 100 pages.","price":"120.00","stock":25}
+HTTP 201
+
+### 3. Add product without token
+$ curl -X POST http://127.0.0.1:8765/api/products/ -H Content-Type: application/json -d {"name":"Notebook","description":"x","price":"120.00","stock":25}
+{"detail":"Authentication credentials were not provided."}
+HTTP 401
+
+### 4. Empty name
+$ curl -X POST http://127.0.0.1:8765/api/products/ -H Authorization: Token YOUR_TOKEN -H Content-Type: application/json -d {"name":"","description":"x","price":"10.00","stock":5}
+{"name":["This field may not be blank."]}
+HTTP 400
+
+### 5. Price zero
+$ curl -X POST http://127.0.0.1:8765/api/products/ -H Authorization: Token YOUR_TOKEN -H Content-Type: application/json -d {"name":"Pen","description":"x","price":"0","stock":5}
+{"price":["Price must be greater than zero."]}
+HTTP 400
+
+### 6. Negative stock
+$ curl -X POST http://127.0.0.1:8765/api/products/ -H Authorization: Token YOUR_TOKEN -H Content-Type: application/json -d {"name":"Pen","description":"x","price":"10.00","stock":-1}
+{"stock":["Stock cannot be negative."]}
+HTTP 400
+
+### 7. Page two after six products
+$ curl http://127.0.0.1:8765/api/products/?page=2
+{"count":6,"next":null,"previous":"http://127.0.0.1:8765/api/products/","results":[{"id":6,"name":"Item 6","description":"d","price":"9.99","stock":6}]}
+HTTP 200
+
